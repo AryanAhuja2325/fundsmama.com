@@ -1,23 +1,39 @@
-import logo from './logo.svg';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import Navbar from './components/miscellaneous/Navbar';
+import AboutUs from './pages/AboutUs';
+import Footer from './components/miscellaneous/Footer';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import ENach from './pages/ENach';
+import LoanApplicationTC from './pages/LoanApplicationTC';
+import RefundPolicy from './pages/RefundPolicy';
+import AccountAgg from './pages/AccountAgg';
+import ContactUs from './pages/ContactUs';
+import InstantLoan from './pages/InstantLoan';
+import ShortLoan from './pages/ShortLoan';
+import Home from './pages/Home';
+// import RepayLoan from './pages/RepayLoan';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar />
+      <Routes>
+        <Route path="/" Component={Home} />
+        <Route path="/aboutus" Component={AboutUs} />
+        {/* <Route path="/repayLoan" Component={RepayLoan} /> */}
+        <Route path="/instant_loan" Component={InstantLoan} />
+        <Route path="/short_loan" Component={ShortLoan} />
+        <Route path="/t&c" Component={TermsAndConditions} />
+        <Route path="/privacy_policy" Component={PrivacyPolicy} />
+        <Route path="/e-nach_t&c" Component={ENach} />
+        <Route path="/loan_application_t&c" Component={LoanApplicationTC} />
+        <Route path="/refund_policy" Component={RefundPolicy} />
+        <Route path="/acc_agg" Component={AccountAgg} />
+        <Route path="/contactus" Component={ContactUs} />
+      </Routes>
+      <Footer />
     </div>
   );
 }
