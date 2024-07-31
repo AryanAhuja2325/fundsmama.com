@@ -61,21 +61,6 @@ const Footer = () => {
                 </Container>
             </Box>
 
-            <Box sx={{ backgroundColor: COLORS.white, paddingY: 6, textAlign: 'center', color: COLORS.darkBlue }} >
-                <Container>
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                        A Unit Of Girdhar Finlease Private Limited
-                        <br /> GRIEVANCE REDRESSAL CELL
-                    </Typography>
-                    <Typography variant="body1" sx={{ lineHeight: 1.8, marginBottom: 2 }}>
-                        We strictly adhere to the RBI directives and have an efficient grievance redressal team to look into and resolve all types of grievances. We always strive for responsible lending, we only offer loans that we know will be easy for you to repay, and we charge ethical fees. We never believe in high pressure or forced recovery methods of any kind. But if you have a complaint, we take it seriously and solve the problem within 5-7 working days.
-                    </Typography>
-                    <Typography variant="body1" display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={"center"}>
-                        Call us at: <Phone sx={{ marginX: '5px' }} /> +91-9711-711-026&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; Email us at: <Email sx={{ marginX: '5px' }} /> <a href="mailto:grievance@fundsmama.com">grievance@fundsmama.com</a>
-                    </Typography>
-                </Container>
-            </Box>
-
             <Box sx={{ backgroundColor: COLORS.darkBlue, color: COLORS.white, paddingY: 1, textAlign: 'center' }}>
                 <Container>
                     <Typography variant="body2" sx={{ marginTop: 1 }}>

@@ -6,12 +6,9 @@ import {
     Slider,
     Button,
     Paper,
-    Box,
-    Card,
-    CardContent,
     Divider,
+    Box
 } from '@mui/material';
-import { AccessTime, Percent } from '@mui/icons-material';
 import * as COLORS from '../../assets/utils/Constants';
 
 const EMICalculator = () => {
@@ -43,117 +40,168 @@ const EMICalculator = () => {
     }, [loanAmount, loanTenure, interestRate]);
 
     return (
-        <Container maxWidth="md" sx={{ padding: '40px 0' }}>
-            <Typography variant="h3" sx={{ color: COLORS.darkBlue, textAlign: 'center', mb: 2 }}>
-                EMI Calculator
-            </Typography>
-            <Typography variant="subtitle1" sx={{ color: COLORS.darkBlue, textAlign: 'center', mb: 4 }}>
-                Calculate Your Personal Loan EMI Here!
-            </Typography>
-            <Divider sx={{ marginBottom: 4, width: '20%', margin: '0 auto', height: 5, backgroundColor: COLORS.darkBlue }} />
+        <div style={{ background: '#f0f4f8', padding: '40px 0' }}>
+            <Container>
+                <Grid container >
+                    <Grid item xs={12}>
+                        <Typography variant="h3" align="left" gutterBottom color={COLORS.darkBlue} sx={{ fontWeight: 'bold' }}>
+                            EMI Calculator
+                        </Typography>
+                        <Typography variant="subtitle1" align="left" gutterBottom>
+                            Calculate Your Personal Loan EMI Here!
+                        </Typography>
+                        <Divider style={{ margin: '20px 0', width: '20%', height: '4px', backgroundColor: COLORS.darkBlue }} />
+                    </Grid>
 
-            <Card>
-                <CardContent>
-                    <Grid container spacing={4}>
-                        <Grid item xs={12} md={8}>
-                            <Box mb={3}>
-                                <Typography variant="h6">Loan Amount</Typography>
-                                <Grid container alignItems="center">
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2">5,000</Typography>
-                                    </Grid>
-                                    <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                                        <Typography variant="body2">1L</Typography>
-                                    </Grid>
+                    <Grid item xs={12} md={8}>
+                        <Paper elevation={2} sx={{ padding: '30px', backgroundColor: COLORS.darkBlue, color: COLORS.white, borderRadius: '40px' }}>
+                            <Typography variant="h6">Loan Amount</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2">5,000</Typography>
                                 </Grid>
+                                <Grid item xs={6} style={{ textAlign: 'right' }}>
+                                    <Typography variant="body2">1L</Typography>
+                                </Grid>
+                            </Grid>
+                            <Box sx={{ paddingX: '30px', backgroundColor: COLORS.white, borderRadius: '40px  ' }}>
                                 <Slider
                                     value={loanAmount}
                                     min={5000}
                                     max={100000}
                                     step={5000}
                                     onChange={handleLoanAmountChange}
-                                    valueLabelDisplay="on"
-                                    valueLabelFormat={(value) => `₹${value}`}
-                                    sx={{ color: COLORS.darkBlue }}
+                                    valueLabelDisplay="auto"
+                                    sx={{
+                                        color: COLORS.yellowOrange,
+                                        '& .MuiSlider-thumb': {
+                                            backgroundColor: COLORS.black,
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: 0,
+                                            '&:hover, &.Mui-focusVisible': {
+                                                boxShadow: 'inherit',
+                                            },
+                                        },
+                                        '& .MuiSlider-track': {
+                                            backgroundColor: COLORS.yellowOrange,
+                                        },
+                                    }}
                                 />
                             </Box>
+                            <Typography variant="body2" align="right">{loanAmount}</Typography>
 
-                            <Box mb={3}>
-                                <Typography variant="h6">
-                                    <AccessTime sx={{ verticalAlign: 'middle', marginRight: 1 }} /> Loan Tenure (Days)
-                                </Typography>
-                                <Grid container alignItems="center">
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2">1</Typography>
-                                    </Grid>
-                                    <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                                        <Typography variant="body2">90</Typography>
-                                    </Grid>
+                            <Typography variant="h6" style={{ marginTop: '20px' }}>Loan Tenure (Days)</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2">1</Typography>
                                 </Grid>
+                                <Grid item xs={6} style={{ textAlign: 'right' }}>
+                                    <Typography variant="body2">90</Typography>
+                                </Grid>
+                            </Grid>
+                            <Box sx={{ paddingX: '30px', backgroundColor: COLORS.white, borderRadius: '40px  ' }}>
                                 <Slider
                                     value={loanTenure}
                                     min={1}
                                     max={90}
                                     onChange={handleLoanTenureChange}
-                                    valueLabelDisplay="on"
-                                    sx={{ color: COLORS.darkBlue }}
+                                    valueLabelDisplay="auto"
+                                    sx={{
+                                        color: COLORS.yellowOrange,
+                                        '& .MuiSlider-thumb': {
+                                            backgroundColor: COLORS.black,
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: 0,
+                                            '&:hover, &.Mui-focusVisible': {
+                                                boxShadow: 'inherit',
+                                            },
+                                        },
+                                        '& .MuiSlider-track': {
+                                            backgroundColor: COLORS.yellowOrange,
+                                        },
+                                    }}
                                 />
                             </Box>
+                            <Typography variant="body2" align="right">{loanTenure}</Typography>
 
-                            <Box mb={3}>
-                                <Typography variant="h6">
-                                    <Percent sx={{ verticalAlign: 'middle', marginRight: 1 }} /> Interest Rate
-                                </Typography>
-                                <Grid container alignItems="center">
-                                    <Grid item xs={6}>
-                                        <Typography variant="body2">1.0%</Typography>
-                                    </Grid>
-                                    <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                                        <Typography variant="body2">1.5%</Typography>
-                                    </Grid>
+                            <Typography variant="h6" style={{ marginTop: '20px' }}>Interest Rate</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Typography variant="body2">1.0%</Typography>
                                 </Grid>
+                                <Grid item xs={6} style={{ textAlign: 'right' }}>
+                                    <Typography variant="body2">1.5%</Typography>
+                                </Grid>
+                            </Grid>
+                            <Box sx={{ paddingX: '30px', backgroundColor: COLORS.white, borderRadius: '40px  ' }}>
                                 <Slider
                                     value={interestRate}
                                     min={1}
                                     max={1.5}
                                     step={0.1}
                                     onChange={handleInterestRateChange}
-                                    valueLabelDisplay="on"
-                                    sx={{ color: COLORS.darkBlue }}
+                                    valueLabelDisplay="auto"
+                                    sx={{
+                                        color: COLORS.yellowOrange,
+                                        '& .MuiSlider-thumb': {
+                                            backgroundColor: COLORS.black,
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: 0,
+                                            '&:hover, &.Mui-focusVisible': {
+                                                boxShadow: 'inherit',
+                                            },
+                                        },
+                                        '& .MuiSlider-track': {
+                                            backgroundColor: COLORS.yellowOrange,
+                                        },
+                                    }}
                                 />
                             </Box>
-                        </Grid>
-
-                        <Grid item xs={12} md={4}>
-                            <Paper elevation={3} sx={{ padding: 3, textAlign: 'center' }}>
-                                <Typography variant="body2" gutterBottom>
-                                    Loan Amount
-                                </Typography>
-                                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                                    ₹{loanAmount}
-                                </Typography>
-                                <Divider sx={{ margin: '20px 0' }} />
-                                <Typography variant="body2">Loan Tenure</Typography>
-                                <Typography variant="body2">{loanTenure} Days</Typography>
-                                <Divider sx={{ margin: '20px 0' }} />
-                                <Typography variant="h5">Total Amount</Typography>
-                                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                                    ₹{totalAmount.toFixed(2)}
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{ marginTop: 3, width: '100%', '&:hover': { backgroundColor: COLORS.black } }}
-                                    onClick={() => alert('Apply Now!')}
-                                >
-                                    Apply Now
-                                </Button>
-                            </Paper>
-                        </Grid>
+                            <Typography variant="body2" align="right">{interestRate}%</Typography>
+                        </Paper>
                     </Grid>
-                </CardContent>
-            </Card>
-        </Container>
+
+                    <Grid item xs={12} md={4}>
+                        <Paper elevation={3} style={{ padding: '30px', textAlign: 'center', backgroundColor: COLORS.yellow, borderRadius: '40px', border: 1, borderColor: COLORS.darkBlue, display: 'flex', flexDirection: 'column' }}>
+                            <Typography variant="h4" color={COLORS.darkBlue} fontWeight={'bold'}>Loan Amount</Typography>
+                            <Box sx={{ marginTop: '20px', backgroundColor: COLORS.darkBlue, display: 'flex', justifyContent: 'center', alignSelf: 'center', width: '50%' }}>
+                                <Typography variant="h4" color={COLORS.white} text>
+                                    <strong>{loanAmount}</strong>
+                                </Typography>
+                            </Box>
+                            <Grid container spacing={2} style={{ marginTop: '20px' }}>
+                                <Grid item xs={6}>
+                                    <Typography variant="h6">Loan Tenure</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="h6">{loanTenure} Days</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="h6">Total Amount</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Typography variant="h6">
+                                        <strong>₹{totalAmount.toFixed(2)}</strong>
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                style={{ marginTop: '20px', padding: '10px 20px' }}
+                                onClick={() => alert('Apply Now!')}
+                                sx={{ backgroundColor: COLORS.darkBlue, width: '50%', alignSelf: 'center' }}
+                            >
+                                Apply Now
+                            </Button>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </Container>
+        </div >
     );
 };
 

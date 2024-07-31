@@ -1,285 +1,313 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import styled from '@emotion/styled';
 import {
-    Container, Grid, Typography, TextField, Button, makeStyles,
+  Button,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+  Divider,
+  Box
 } from '@mui/material';
+import aboutBanner from '../assets/imgs/about-banner.jpg';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        backgroundColor: '#fff',
-    },
-    header: {
-        backgroundColor: '#e06714',
-        padding: theme.spacing(7, 0),
-        textAlign: 'center',
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 30,
-    },
-    content: {
-        padding: theme.spacing(6, 0, 12),
-        position: 'relative',
-    },
-    formControl: {
-        backgroundColor: '#fff',
-    },
-    submitButton: {
-        backgroundColor: '#f88b37',
-        margin: theme.spacing(2, 0),
-    },
-    otpForm: {
-        display: 'none',
-    },
-}));
+const StyledContainer = styled(Container)`
+  padding: 20px 0;
+`;
+
+const StyledTypography = styled(Typography)`
+  font-weight: bold;
+  font-size: 40px;
+  color: #fff;
+  text-align: center;
+  padding: 55px 0;
+  margin-top: 100px;
+`;
+
+const Background = styled(Box)({
+  backgroundImage: `url(${aboutBanner})`,
+  marginTop: '100px',
+  height: '400px',
+  backgroundSize: 'cover'
+})
+
+const RepaySection = styled.div`
+  width: 100%;
+  padding: 50px 0 95px;
+  position: relative;
+
+  @media (max-width: 540px) {
+    padding: 50px 0;
+    top: 300px;
+    text-align: center;
+    height: 1375px;
+  }
+
+  & h2 {
+    margin: 0 0 20px;
+    font-size: 15px;
+    font-weight: bold;
+  }
+`;
+
+const FormSection = styled(Box)`
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+`;
 
 const RepayLoan = () => {
-    const classes = useStyles();
-    const [showOtpForm, setShowOtpForm] = useState(false);
-    const [formAction, setFormAction] = useState('');
+  const [formData, setFormData] = useState({
+    loanid: '',
+    otpval: '',
+    payamt: 0,
+  });
 
-    const handleFormSubmit = (event) => {
-        event.preventDefault();
-        setShowOtpForm(true);
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-    const handleRepayButtonClick = () => {
-        setFormAction('loan_repay.php');
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { loanid } = formData;
 
-    const handleOtpButtonClick = () => {
-        setFormAction('otp_verify.php');
-    };
+    if (!loanid) {
+      alert("Loan/Customer ID required.");
+      return;
+    }
 
-    useEffect(() => {
-        // Remove 'active' class from all nav items and add it to 'repay'
-        const navItems = document.querySelectorAll(".nav li");
-        navItems.forEach(item => item.classList.remove("active"));
-        document.getElementById('repay')?.classList.add('active');
-    }, []);
+    try {
+      const formData = new FormData();
+      formData.append('loanid', loanid);
 
-    const handlePayNowViewClick = () => {
-        document.getElementById("phonepay").style.display = "block";
-        document.getElementById("ccavenue").style.display = "block";
-    };
+      const response = await axios.post('https://tech.girdharfin.cloud/api/v1/customer-login/', {
+        id: loanid,
+        ip: window.location.hostname,
+      }, {
+        headers: {
+          'Auth': 'ZnVuZHNtYW1hMjAyMzA0MTk=',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
 
-    const handlePhonePayClick = () => {
-        setFormAction('phonePayRequestHandler.php');
-    };
+      const data = response.data;
+      if (data.status === 1) {
+        setFormData({ ...formData, loanid: data.id });
+        document.getElementById("formDataotp").style.display = "block";
 
-    const handleCcAvenueClick = () => {
-        setFormAction('ccAvenue.php');
-    };
+        await axios.post('https://api.girdharfin.cloud/Api/TaskApi/send_repay_otp_mail', {
+          lead_id: data.lead_id
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+      } else {
+        alert(data.messages || "Invalid Loan/Customer ID");
+      }
+    } catch (error) {
+      console.error("There was an error verifying the loan ID!", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
 
-    return (
-        <>
-            <div className={classes.header}>
-                Repay your loan and interest amount through the following bank or QR Code
-            </div>
-
-            <Container id="apply">
+  return (
+    <>
+      <Background>
+        <StyledTypography>
+          Repay your loan and interest amount through <br />the following bank or QR Code
+        </StyledTypography>
+      </Background>
+      <StyledContainer>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Typography variant="h5">
+              Repay Loan
+            </Typography>
+            <Divider />
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <FormSection>
+              <form id="formData" autoComplete="off" onSubmit={handleSubmit}>
+                <TextField
+                  label="Lender"
+                  value="FUNDS MAMA"
+                  disabled
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Loan/CIF Number"
+                  name="loanid"
+                  value={formData.loanid}
+                  onChange={handleChange}
+                  placeholder="Ex: DMI0001234567"
+                  fullWidth
+                  margin="normal"
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  style={{ marginTop: '16px' }}
+                >
+                  Get Payable Amount
+                </Button>
+              </form>
+              <form id="formDataotp" autoComplete="off" style={{ display: 'none' }}>
+                <TextField
+                  label="Confirmation code"
+                  name="otpval"
+                  value={formData.otpval}
+                  onChange={handleChange}
+                  placeholder="Ex: 123456"
+                  fullWidth
+                  margin="normal"
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  style={{ marginTop: '16px' }}
+                >
+                  Verify OTP
+                </Button>
+              </form>
+            </FormSection>
+          </Grid>
+        </Grid>
+      </StyledContainer>
+      <RepaySection>
+        <StyledContainer>
+          <Grid container spacing={3}>
+            <FormSection>
+              <form id="formDatapay" autoComplete="off" method="post" style={{ display: 'none' }}>
                 <Grid container spacing={3}>
-                    <Grid item md={8}>
-                        <Typography variant="h6">
-                            Repay your loan and interest amount through the following bank or QR Code
-                        </Typography>
-                    </Grid>
-                    <Grid item md={1}>
-                        &nbsp;
-                    </Grid>
-                    <Grid item md={4}>
-                        <div>
-                            <Typography variant="h6">Repay Loan</Typography>
-                            <hr />
-                        </div>
-
-                        <form id="formData" autoComplete="off" action={formAction} method="post" encType="multipart/form-data" acceptCharset="utf-8">
-                            <input type="hidden" name="gpsLocation" id="gpsLocation" />
-
-                            <TextField
-                                label="Lender"
-                                value="FUNDS MAMA"
-                                className={classes.formControl}
-                                fullWidth
-                                disabled
-                                margin="normal"
-                            />
-
-                            <TextField
-                                label="Loan/CIF Number"
-                                name="loanid"
-                                id="loanid"
-                                className={classes.formControl}
-                                placeholder="Ex: DMI0001234567"
-                                fullWidth
-                                margin="normal"
-                            />
-
-                            <Button
-                                type="submit"
-                                id="repaybutton"
-                                variant="contained"
-                                color="primary"
-                                className={classes.submitButton}
-                                onClick={handleFormSubmit}
-                            >
-                                Get Payable Amount
-                            </Button>
-                        </form>
-
-                        {showOtpForm && (
-                            <form id="formDataotp" autoComplete="off" action="otp_verify.php" method="post" acceptCharset="utf-8" className={classes.otpForm}>
-                                <TextField
-                                    label="Confirmation code"
-                                    name="otpval"
-                                    id="otpval"
-                                    className={classes.formControl}
-                                    placeholder="Ex: 123456"
-                                    fullWidth
-                                    margin="normal"
-                                />
-                                <input type="hidden" name="leadid" id="leadid" className={classes.formControl} />
-
-                                <Button
-                                    type="submit"
-                                    id="otpbutton"
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submitButton}
-                                    onClick={handleOtpButtonClick}
-                                >
-                                    Verify OTP
-                                </Button>
-                            </form>
-                        )}
-                    </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Customer Id"
+                      name="custidd"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Loan No"
+                      name="lonidd"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="First Name"
+                      name="firstnamm"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Loan Recommended"
+                      name="loanrecommendd"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Disbursal Date"
+                      name="disdtt"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="ROI"
+                      name="loanroii"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Repayment Amount"
+                      name="repayamtt"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Repayment Date"
+                      name="repaydtt"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Loan Outstanding Amount"
+                      name="outstandamtt"
+                      value=""
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      label="Pay Amount"
+                      name="payamt"
+                      type="number"
+                      value={formData.payamt}
+                      onChange={handleChange}
+                      fullWidth
+                      margin="normal"
+                      inputProps={{ min: 1 }}
+                    />
+                  </Grid>
                 </Grid>
-            </Container>
-
-            <div className={classes.content}>
-                <Container>
-                    <Grid container spacing={3}>
-                        <form id="formDatapay" autoComplete="off" action={formAction} method="post" acceptCharset="utf-8" className={classes.otpForm}>
-                            <Grid item md={12}>
-                                <Typography variant="h6">Customer Id</Typography>
-                                <TextField
-                                    name=""
-                                    id="custidd"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Loan No</Typography>
-                                <TextField
-                                    name=""
-                                    id="lonidd"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">First Name</Typography>
-                                <TextField
-                                    name=""
-                                    id="firstnamm"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Loan Recommended</Typography>
-                                <TextField
-                                    name=""
-                                    id="loanrecommendd"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Disbursal Date</Typography>
-                                <TextField
-                                    name=""
-                                    id="disdtt"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">ROI</Typography>
-                                <TextField
-                                    name=""
-                                    id="loanroii"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Repayment Amount</Typography>
-                                <TextField
-                                    name=""
-                                    id="repayamtt"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Repayment Date</Typography>
-                                <TextField
-                                    name=""
-                                    id="repaydtt"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Loan Outstanding Amount</Typography>
-                                <TextField
-                                    name=""
-                                    id="outstandamtt"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    disabled
-                                    margin="normal"
-                                />
-                                <Typography variant="h6">Pay Amount</Typography>
-                                <TextField
-                                    name="payamt"
-                                    id="payamt"
-                                    className={classes.formControl}
-                                    fullWidth
-                                    margin="normal"
-                                    type="number"
-                                    inputProps={{ min: 1 }}
-                                />
-                                <input type="hidden" name="leadid" id="leadid2" className={classes.formControl} />
-                                <input type="hidden" name="custid" id="custid" className={classes.formControl} />
-                                <input type="hidden" name="lonid" id="lonid" className={classes.formControl} />
-                                <input type="hidden" name="firstnam" id="firstnam" className={classes.formControl} />
-                                <input type="hidden" name="loanrecommend" id="loanrecommend" className={classes.formControl} />
-                                <input type="hidden" name="disdt" id="disdt" className={classes.formControl} />
-                                <input type="hidden" name="loanroi" id="loanroi" className={classes.formControl} />
-                                <input type="hidden" name="repayamt" id="repayamt" className={classes.formControl} />
-                                <input type="hidden" name="repaydt" id="repaydt" className={classes.formControl} />
-                                <input type="hidden" name="outstandamt" id="outstandamt" className={classes.formControl} />
-                                <input type="hidden" name="sanction_name" id="sanction_name" className={classes.formControl} />
-                                <input type="hidden" name="collection_executive_name" id="collection_executive_name" className={classes.formControl} />
-
-                                <Button
-                                    type="submit"
-                                    id="ccavenue"
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submitButton}
-                                    onClick={handleCcAvenueClick}
-                                >
-                                    Pay
-                                </Button>
-                            </Grid>
-                        </form>
-                    </Grid>
-                </Container>
-            </div>
-        </>
-    );
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  style={{ marginTop: '16px', backgroundColor: '#f88b37' }}
+                >
+                  Pay
+                </Button>
+              </form>
+            </FormSection>
+          </Grid>
+        </StyledContainer>
+      </RepaySection>
+    </>
+  );
 };
 
 export default RepayLoan;

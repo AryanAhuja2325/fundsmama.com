@@ -13,7 +13,8 @@ import ContactUs from './pages/ContactUs';
 import InstantLoan from './pages/InstantLoan';
 import ShortLoan from './pages/ShortLoan';
 import Home from './pages/Home';
-// import RepayLoan from './pages/RepayLoan';
+import RepayLoan from './pages/RepayLoan';
+import InstantJourney from './pages/InstantJourney';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
       <Routes>
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
-        {/* <Route path="/repayLoan" Component={RepayLoan} /> */}
+        <Route path="/repayLoan" Component={RepayLoan} />
         <Route path="/instant_loan" Component={InstantLoan} />
         <Route path="/short_loan" Component={ShortLoan} />
         <Route path="/t&c" Component={TermsAndConditions} />
@@ -32,6 +33,7 @@ function App() {
         <Route path="/refund_policy" Component={RefundPolicy} />
         <Route path="/acc_agg" Component={AccountAgg} />
         <Route path="/contactus" Component={ContactUs} />
+        <Route path="/instant-journey" Component={InstantJourney} />
       </Routes>
       <Footer />
     </div>

@@ -1,0 +1,23 @@
+/* Add your custom CSS styles here */
+h3 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+button {
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.link:visited {
+    color: blue;
+}

@@ -15,6 +15,7 @@ import EligibilityAndDocumentsTabs from '../components/miscellaneous/Eligibility
 import FAQ from '../components/miscellaneous/FAQ';
 import HappyCustomer from '../components/miscellaneous/HappyCustomer';
 import EMICalculator from '../components/miscellaneous/EMICalculator';
+import Review from '../components/miscellaneous/Review';
 
 const StyledCarousel = styled(Carousel)({
     width: '100%',
@@ -60,6 +61,22 @@ const Home = () => {
             "answer": "Yes, you can. FundsMama's Travel Loans can be used for travel to any domestic or international destination. Our Travel loans can be used for travel bookings, hotel accommodation and sightseeing expenses."
         }
     ]
+
+    const reviewsData = [
+        {
+            name: 'Rajat Singh',
+            review: 'Taking a personal loan from FundsMama has been a great experience! When they said I would get the money within 24 hours I was sceptical, but they kept their word. The whole process was just a breeze and they explained everything so well. I am definitely coming back the next time I need a loan.'
+        },
+        {
+            name: 'Abhijit Sarkar',
+            review: 'FundsMama has the simplest and fastest process I have ever seen. I needed a loan urgently to cover my wife\'s medical bills and their team ensured that I got the best deal with a comfortable repayment option. Thanks guys!'
+        },
+        {
+            name: 'Shalini Bose',
+            review: 'I find the whole loan process confusing and tiresome. But the way the FundsMama people explained everything to me patiently with examples, I have no more doubts.'
+        }
+    ];
+
 
     return (
         <>
@@ -149,7 +166,7 @@ const Home = () => {
                     </Grid>
                 </Container>
             </Box>
-            {/*Review by customers*/}
+            <Review data={reviewsData} />
             <FAQ faqs={faqData} />
         </>
     )
