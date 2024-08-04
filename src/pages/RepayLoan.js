@@ -151,7 +151,6 @@ const RepayLoan = () => {
       }
     } catch (error) {
       console.error("Error verifying the loan ID!", error);
-      alert("An error occurred. Please try again.");
     }
   };
 
@@ -195,11 +194,10 @@ const RepayLoan = () => {
       const lstat = data.status;
       const odid = data.order_id;
 
-      // Prepare form data for submission
       const form = document.createElement('form');
       form.method = 'post';
       form.name = 'customerData';
-      form.action = 'https://www.fundsmama.com/ccavRequestHandler.php';
+      form.action = 'https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction&encRequest=' + $encrypted_data + '&access_code='.$access_code;
 
       const addHiddenField = (name, value) => {
         const input = document.createElement('input');

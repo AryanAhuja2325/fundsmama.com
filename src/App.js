@@ -21,7 +21,7 @@ import PaymentGateway from './pages/PaymentGateway';
 function App() {
   return (
     <div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Navbar />
       <Routes>
         <Route path="/" Component={Home} />

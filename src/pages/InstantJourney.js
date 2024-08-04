@@ -670,6 +670,7 @@ const ResidenceDetails = ({ nextStep, prevStep, formValues, setFormValues, error
                 residence_pincode: parseInt(pincode)
             });
             if (response.status === 200) {
+                toast.success("Residance details saved succeessfully")
                 nextStep();
             } else {
                 toast.error("Residence details not saved. Please try again.");
@@ -997,6 +998,7 @@ const BankDetails = ({ nextStep, prevStep, formValues, setFormValues, errors }) 
     };
 
     const handleSubmit = async () => {
+        console.log("called")
         const {
             journey_id,
             accountNumber,
@@ -1060,9 +1062,8 @@ const BankDetails = ({ nextStep, prevStep, formValues, setFormValues, errors }) 
                     'Content-Type': 'application/json',
                 },
             });
-
+            console.log(response)
             if (response.data.status === 1) {
-                // await generate_netbanking_url();
                 nextStep();
             } else {
                 toast.error("An error occurred while submitting bank details. Please try again.");
@@ -1071,23 +1072,6 @@ const BankDetails = ({ nextStep, prevStep, formValues, setFormValues, errors }) 
             toast.error("An error occurred while submitting bank details. Please try again.");
         }
     };
-
-    const generate_netbanking_url = async () => {
-        try {
-            const leadId = parseInt(formValues.leadId);
-            const response = await axios.post(`${baseUrl}integrations/v1/generate-banking-request`, JSON.stringify({
-                lead_id: leadId
-            }), {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            console.log(response.data);
-        } catch (error) {
-            toast.error("An error occurred while generating net banking URL.");
-        }
-    };
-
 
     return (
         <div>
@@ -1188,7 +1172,7 @@ const UploadDocuments = ({ nextStep, prevStep, formValues, setFormValues, errors
                 },
             });
             console.log(formValues)
-
+            console.log(response)
             if (response.data.status === 1) {
                 toast.success(response.data.message);
             } else {
