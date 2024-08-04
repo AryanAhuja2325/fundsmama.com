@@ -11,6 +11,7 @@ import {
   Box
 } from '@mui/material';
 import aboutBanner from '../assets/imgs/about-banner.jpg';
+import * as COLORS from '../assets/utils/Constants';
 
 const StyledContainer = styled(Container)`
   padding: 20px 0;
@@ -62,28 +63,67 @@ const RepayLoan = () => {
     loanid: '',
     otpval: '',
     payamt: 0,
+    lead_id: '',
   });
+
+  const [loanDetails, setLoanDetails] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleVerifyOTP = async () => {
+    try {
+      const response = await axios.post('https://tech.girdharfin.cloud/api/v1/verify-otp/', {
+        lead_id: parseInt(formData.lead_id),
+        otp: parseInt(formData.otpval),
+      }, {
+        headers: {
+          'Auth': 'ZnVuZHNtYW1hMjAyMzA0MTk=',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      console.log(response.data);
+      const data = response.data;
+      const ldata = data.data[0];
+      const now = new Date().getTime();
+      const your_date = new Date(ldata.repayment_date).getTime();
+      const penal_days = Math.round((now - your_date) / (60 * 60 * 24 * 1000)) - 1;
+      const loan_total_outstanding_amount = ((ldata.loan_recommended * (ldata.roi * 2) / 100) * penal_days) + ldata.repayment_amount;
+
+      setLoanDetails({
+        leadid: ldata.lead_id,
+        loanid: ldata.loan_no,
+        firstnm: ldata.first_name,
+        custid: ldata.customer_id,
+        disdt: new Date(ldata.disbursal_date).toLocaleDateString(),
+        repaydt: new Date(ldata.repayment_date).toLocaleDateString(),
+        repayamt: ldata.repayment_amount,
+        loanrecommend: ldata.loan_recommended,
+        roi: ldata.roi,
+        outstanding: loan_total_outstanding_amount,
+        sanction_name: ldata.sanction_name,
+        collection_executive_name: ldata.collection_executive_name,
+      });
+    } catch (error) {
+      console.error("Error verifying OTP", error);
+      alert("Invalid Loan/Customer ID");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { loanid } = formData;
 
-    if (!loanid) {
+    if (!formData.loanid) {
       alert("Loan/Customer ID required.");
       return;
     }
 
     try {
-      const formData = new FormData();
-      formData.append('loanid', loanid);
-
       const response = await axios.post('https://tech.girdharfin.cloud/api/v1/customer-login/', {
-        id: loanid,
+        id: formData.loanid,
         ip: window.location.hostname,
       }, {
         headers: {
@@ -95,7 +135,7 @@ const RepayLoan = () => {
 
       const data = response.data;
       if (data.status === 1) {
-        setFormData({ ...formData, loanid: data.id });
+        setFormData({ ...formData, loanid: data.id, lead_id: data.lead_id });
         document.getElementById("formDataotp").style.display = "block";
 
         await axios.post('https://api.girdharfin.cloud/Api/TaskApi/send_repay_otp_mail', {
@@ -110,7 +150,7 @@ const RepayLoan = () => {
         alert(data.messages || "Invalid Loan/Customer ID");
       }
     } catch (error) {
-      console.error("There was an error verifying the loan ID!", error);
+      console.error("Error verifying the loan ID!", error);
       alert("An error occurred. Please try again.");
     }
   };
@@ -154,12 +194,19 @@ const RepayLoan = () => {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  style={{ marginTop: '16px' }}
+                  sx={{
+                    marginTop: '16px',
+                    backgroundColor: COLORS.yellowOrange,
+                    borderRadius: '10px',
+                    ':hover': {
+                      backgroundColor: COLORS.darkBlue
+                    }
+                  }}
                 >
                   Get Payable Amount
                 </Button>
               </form>
-              <form id="formDataotp" autoComplete="off" style={{ display: 'none' }}>
+              <form id="formDataotp" autoComplete="off" style={{ display: 'none' }} onSubmit={(e) => { e.preventDefault(); handleVerifyOTP(); }}>
                 <TextField
                   label="Confirmation code"
                   name="otpval"
@@ -174,7 +221,14 @@ const RepayLoan = () => {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  style={{ marginTop: '16px' }}
+                  sx={{
+                    marginTop: '16px',
+                    backgroundColor: COLORS.yellowOrange,
+                    borderRadius: '10px',
+                    ':hover': {
+                      backgroundColor: COLORS.darkBlue
+                    }
+                  }}
                 >
                   Verify OTP
                 </Button>
@@ -183,129 +237,116 @@ const RepayLoan = () => {
           </Grid>
         </Grid>
       </StyledContainer>
-      <RepaySection>
-        <StyledContainer>
-          <Grid container spacing={3}>
-            <FormSection>
-              <form id="formDatapay" autoComplete="off" method="post" style={{ display: 'none' }}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Customer Id"
-                      name="custidd"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
+      {loanDetails && (
+        <RepaySection>
+          <StyledContainer>
+            <Grid container spacing={3}>
+              <FormSection>
+                <form id="formDatapay" autoComplete="off" method="post">
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Loan No"
+                        name="lonidd"
+                        value={loanDetails.loanid}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="First Name"
+                        name="firstnamm"
+                        value={loanDetails.firstnm}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Loan Amount"
+                        name="loanrecommendd"
+                        value={loanDetails.loanrecommend}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Disbursal Date"
+                        name="disdtt"
+                        value={loanDetails.disdt}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Repayment Date"
+                        name="repaydtt"
+                        value={loanDetails.repaydt}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Repayment Amount"
+                        name="repayamt"
+                        value={loanDetails.repayamt}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Outstanding"
+                        name="outstandingd"
+                        value={loanDetails.outstanding}
+                        disabled
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        label="Payable Amount"
+                        name="payamt"
+                        value={formData.payamt}
+                        onChange={handleChange}
+                        fullWidth
+                        margin="normal"
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Loan No"
-                      name="lonidd"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="First Name"
-                      name="firstnamm"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Loan Recommended"
-                      name="loanrecommendd"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Disbursal Date"
-                      name="disdtt"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="ROI"
-                      name="loanroii"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Repayment Amount"
-                      name="repayamtt"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Repayment Date"
-                      name="repaydtt"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Loan Outstanding Amount"
-                      name="outstandamtt"
-                      value=""
-                      disabled
-                      fullWidth
-                      margin="normal"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      label="Pay Amount"
-                      name="payamt"
-                      type="number"
-                      value={formData.payamt}
-                      onChange={handleChange}
-                      fullWidth
-                      margin="normal"
-                      inputProps={{ min: 1 }}
-                    />
-                  </Grid>
-                </Grid>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  style={{ marginTop: '16px', backgroundColor: '#f88b37' }}
-                >
-                  Pay
-                </Button>
-              </form>
-            </FormSection>
-          </Grid>
-        </StyledContainer>
-      </RepaySection>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{
+                      marginTop: '16px',
+                      backgroundColor: COLORS.yellowOrange,
+                      borderRadius: '10px',
+                      ':hover': {
+                        backgroundColor: COLORS.darkBlue
+                      }
+                    }}
+                  >
+                    Proceed To Pay
+                  </Button>
+                </form>
+              </FormSection>
+            </Grid>
+          </StyledContainer>
+        </RepaySection>
+      )}
     </>
   );
 };

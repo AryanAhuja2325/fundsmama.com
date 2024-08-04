@@ -16,6 +16,7 @@ import FAQ from '../components/miscellaneous/FAQ';
 import HappyCustomer from '../components/miscellaneous/HappyCustomer';
 import EMICalculator from '../components/miscellaneous/EMICalculator';
 import Review from '../components/miscellaneous/Review';
+import LoanProducts from '../components/miscellaneous/LoanProducts';
 
 const StyledCarousel = styled(Carousel)({
     width: '100%',
@@ -137,6 +138,9 @@ const Home = () => {
             </Box>
             <Box sx={{ marginTop: '20px', marginBottom: '20px' }}>
                 <HappyCustomer />
+            </Box>
+            <Box sx={{ marginTop: '20px', marginBottom: '20px' }}>
+                <LoanProducts />
             </Box>
             <Box sx={{ marginTop: '20px', marginBottom: '20px' }}>
                 <EMICalculator />

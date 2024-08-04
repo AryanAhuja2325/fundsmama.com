@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import { ToastContainer } from 'react-toastify';
 import Navbar from './components/miscellaneous/Navbar';
 import AboutUs from './pages/AboutUs';
 import Footer from './components/miscellaneous/Footer';
@@ -19,6 +20,7 @@ import InstantJourney from './pages/InstantJourney';
 function App() {
   return (
     <div>
+      <ToastContainer />
       <Navbar />
       <Routes>
         <Route path="/" Component={Home} />
