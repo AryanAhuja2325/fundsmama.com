@@ -16,6 +16,7 @@ import ShortLoan from './pages/ShortLoan';
 import Home from './pages/Home';
 import RepayLoan from './pages/RepayLoan';
 import InstantJourney from './pages/InstantJourney';
+import PaymentGateway from './pages/PaymentGateway';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/acc_agg" Component={AccountAgg} />
         <Route path="/contactus" Component={ContactUs} />
         <Route path="/instant-journey" Component={InstantJourney} />
+        <Route path='/payment-gateway' Component={PaymentGateway} />
       </Routes>
       <Footer />
     </div>

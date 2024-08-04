@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from '@emotion/styled';
 import {
@@ -155,6 +155,90 @@ const RepayLoan = () => {
     }
   };
 
+  const handlePaySubmit = async (e) => {
+    e.preventDefault();
+
+    // Prepare the payment data
+    const d = new Date().getTime();
+
+    const fields1 = {
+      customer_id: loanDetails.custid,
+      first_name: loanDetails.firstnm,
+      loan_recommended: loanDetails.loanrecommend,
+      disbursal_date: loanDetails.disdt,
+      roi: loanDetails.roi,
+      repay_amount: loanDetails.repayamt,
+      repay_date: loanDetails.repaydt,
+      oustanding_amount: loanDetails.outstanding,
+      pay_amount: formData.payamt,
+      sanction_executive: loanDetails.sanction_name,
+    };
+
+    const fields = {
+      request_data: fields1,
+      response_data: "",
+      lead_id: loanDetails.leadid,
+      loan_no: loanDetails.loanid,
+      method_id: 1,
+    };
+
+    try {
+      const response = await axios.post('https://tech.girdharfin.cloud/api/v1/insert-request/', fields, {
+        headers: {
+          'Auth': 'ZnVuZHNtYW1hMjAyMzA0MTk=',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      const data = response.data;
+      const lstat = data.status;
+      const odid = data.order_id;
+
+      // Prepare form data for submission
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.name = 'customerData';
+      form.action = 'https://www.fundsmama.com/ccavRequestHandler.php';
+
+      const addHiddenField = (name, value) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      };
+
+      addHiddenField('billing_name', loanDetails.firstnm);
+      addHiddenField('billing_address', `${loanDetails.collection_executive_name} - ${loanDetails.sanction_name}`);
+      addHiddenField('billing_city', 'd');
+      addHiddenField('billing_state', 'd');
+      addHiddenField('billing_zip', 'd');
+      addHiddenField('billing_country', 'INDIA');
+      addHiddenField('billing_tel', '1234567890');
+      addHiddenField('billing_email', 'd@gmail.com');
+
+      addHiddenField('tid', d);
+      addHiddenField('merchant_id', 1895498);
+      addHiddenField('order_id', odid);
+      addHiddenField('amount', formData.payamt);
+      addHiddenField('currency', 'INR');
+      addHiddenField('redirect_url', 'https://fundsmama.com/ccavResponseHandler.php');
+      addHiddenField('cancel_url', 'https://fundsmama.com/ccavResponseHandler.php');
+      addHiddenField('language', 'EN');
+      addHiddenField('merchant_param1', loanDetails.leadid);
+      addHiddenField('merchant_param2', loanDetails.loanid);
+      addHiddenField('merchant_param3', loanDetails.sanction_name);
+      addHiddenField('customer_identifier', loanDetails.custid);
+      addHiddenField('integration_type', 'iframe_normal');
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error) {
+      console.error('Error during payment submission:', error);
+    }
+  };
+
   return (
     <>
       <Background>
@@ -242,12 +326,12 @@ const RepayLoan = () => {
           <StyledContainer>
             <Grid container spacing={3}>
               <FormSection>
-                <form id="formDatapay" autoComplete="off" method="post">
+                <form id="formDatapay" autoComplete="off" onSubmit={handlePaySubmit}>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Loan No"
-                        name="lonidd"
+                        name="loanid"
                         value={loanDetails.loanid}
                         disabled
                         fullWidth
@@ -257,7 +341,7 @@ const RepayLoan = () => {
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="First Name"
-                        name="firstnamm"
+                        name="firstnm"
                         value={loanDetails.firstnm}
                         disabled
                         fullWidth
@@ -267,7 +351,7 @@ const RepayLoan = () => {
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Loan Amount"
-                        name="loanrecommendd"
+                        name="loanrecommend"
                         value={loanDetails.loanrecommend}
                         disabled
                         fullWidth
@@ -277,7 +361,7 @@ const RepayLoan = () => {
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Disbursal Date"
-                        name="disdtt"
+                        name="disdt"
                         value={loanDetails.disdt}
                         disabled
                         fullWidth
@@ -287,7 +371,7 @@ const RepayLoan = () => {
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Repayment Date"
-                        name="repaydtt"
+                        name="repaydt"
                         value={loanDetails.repaydt}
                         disabled
                         fullWidth
@@ -307,7 +391,7 @@ const RepayLoan = () => {
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Outstanding"
-                        name="outstandingd"
+                        name="outstanding"
                         value={loanDetails.outstanding}
                         disabled
                         fullWidth
